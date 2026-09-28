@@ -18,7 +18,7 @@ import { usePortfolioFunds } from '@/hooks/usePortfolioFunds';
 import { usePortfolioSummary } from '@/hooks/usePortfolioSummary';
 import { usePortfolioTab } from '@/hooks/usePortfolioTab';
 import { formatCurrency, formatPercent } from '@/lib/format';
-import { Banknote, BarChart3, PiggyBank, Wallet } from 'lucide-react';
+import { Banknote, BarChart3, Download, PiggyBank, Wallet } from 'lucide-react';
 import { Suspense } from 'react';
 
 const TAB_COMPONENTS = {
@@ -40,7 +40,7 @@ function SummaryStats({ summary, funds, isLoading }) {
     const availableCash = funds?.equity?.net ?? funds?.availableCash ?? funds?.net ?? null;
 
     return (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 stagger-fade">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatsCard
                 index={1}
                 label="Portfolio Value"
@@ -50,14 +50,14 @@ function SummaryStats({ summary, funds, isLoading }) {
             />
             <StatsCard
                 index={2}
-                label="Invested"
+                label="Invested Amount"
                 value={formatCurrency(summary?.totalInvestedValue)}
                 icon={PiggyBank}
                 isLoading={isLoading}
             />
             <StatsCard
                 index={3}
-                label="Unrealized"
+                label="Unrealized P&L"
                 value={formatCurrency(unrealized, { showSign: true })}
                 changePercent={formatPercent(summary?.totalUnrealizedPLPercent, { showSign: true })}
                 isPositive={unrealizedPos}
@@ -67,7 +67,7 @@ function SummaryStats({ summary, funds, isLoading }) {
             />
             <StatsCard
                 index={4}
-                label="Cash"
+                label="Available Cash"
                 value={formatCurrency(availableCash)}
                 icon={Banknote}
                 isLoading={isLoading}
@@ -85,22 +85,21 @@ export default function PortfolioPage() {
     const context = getContext();
 
     return (
-        <div className="space-y-8">
-            <header className="pb-6 border-b border-hairline flex items-end justify-between gap-6">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                        <span className="index-num">FOLIO·§02</span>
-                        <span className="h-px w-8 bg-hairline" />
-                        <span className="eyebrow">Portfolio Ledger</span>
-                    </div>
-                    <h1 className="display-serif text-[40px] md:text-[56px] text-foreground">
-                        The <span className="italic">Holdings</span> Page
-                    </h1>
-                    <p className="text-[13px] text-muted-foreground max-w-md font-serif italic">
-                        Every position, every order, every trade — under one banner.
+        <div className="space-y-6">
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Portfolio Details</h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        Comprehensive view of your holdings, orders, and trades.
                     </p>
                 </div>
-                <RefreshButton />
+                <div className="flex items-center gap-2">
+                    <button className="ed-btn ed-btn-ghost bg-card border shadow-sm h-9">
+                        <Download className="w-4 h-4 mr-2" />
+                        Export Report
+                    </button>
+                    <RefreshButton />
+                </div>
             </header>
 
             <SummaryStats
@@ -109,11 +108,16 @@ export default function PortfolioPage() {
                 isLoading={summaryQuery.isLoading || fundsQuery.isLoading}
             />
 
-            <PortfolioTabBar activeTab={activeTab} onTabChange={setTab} />
-
-            <Suspense fallback={<TabLoadingSkeleton />}>
-                <ActiveTab navigateTo={navigateTo} context={context} />
-            </Suspense>
+            <div className="bg-card border shadow-sm rounded-lg overflow-hidden flex flex-col">
+                <div className="border-b bg-muted/20 px-2 pt-2">
+                    <PortfolioTabBar activeTab={activeTab} onTabChange={setTab} />
+                </div>
+                <div className="p-0">
+                    <Suspense fallback={<TabLoadingSkeleton />}>
+                        <ActiveTab navigateTo={navigateTo} context={context} />
+                    </Suspense>
+                </div>
+            </div>
         </div>
     );
 }

@@ -1,25 +1,28 @@
 'use client';
 
 import { usePortfolioSummary } from '@/hooks/usePortfolioSummary';
-import { formatCurrency, formatDateTime, formatPercent } from '@/lib/format';
+import { formatCurrency, formatPercent } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { AlertTriangle, ArrowDownRight, ArrowUpRight, X } from 'lucide-react';
+import { AlertTriangle, ArrowDownRight, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
-function Skeleton({ className = '' }) {
-    return <div className={cn('animate-pulse bg-muted/60 rounded-sm', className)} />;
-}
-
-function SubMetric({ label, value, valueClass, prefix }) {
+function MetricCard({ title, value, subtext, trend, valueClass }) {
     return (
-        <div className="flex flex-col gap-1.5 min-w-0">
-            <div className="flex items-baseline gap-1.5">
-                {prefix && <span className="index-num tnum">{prefix}</span>}
-                <span className="eyebrow">{label}</span>
+        <div className="flex flex-col gap-2 p-5 bg-card border rounded-lg shadow-sm">
+            <span className="text-sm font-medium text-muted-foreground">{title}</span>
+            <div className="flex items-baseline gap-2">
+                <span className={cn("text-3xl font-bold tracking-tight", valueClass)}>{value}</span>
+                {trend !== undefined && (
+                    <span className={cn(
+                        "text-sm font-medium flex items-center",
+                        trend >= 0 ? "text-gain" : "text-loss"
+                    )}>
+                        {trend >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                        {formatPercent(trend)}
+                    </span>
+                )}
             </div>
-            <p className={cn('hero-amount text-[18px] md:text-[20px]', valueClass || 'text-foreground')}>
-                {value}
-            </p>
+            {subtext && <span className="text-xs text-muted-foreground">{subtext}</span>}
         </div>
     );
 }
@@ -30,13 +33,10 @@ export function PortfolioSummary() {
 
     if (isLoading) {
         return (
-            <div className="space-y-4">
-                <Skeleton className="h-44 w-full" />
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Skeleton className="h-24" />
-                    <Skeleton className="h-24" />
-                    <Skeleton className="h-24" />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-pulse">
+                {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="h-28 bg-muted rounded-lg" />
+                ))}
             </div>
         );
     }
@@ -47,109 +47,38 @@ export function PortfolioSummary() {
     const plPositive = (data.totalUnrealizedPL || 0) >= 0;
 
     return (
-        <div className="space-y-3">
-            {/* Stale prices warning */}
+        <div className="space-y-4">
             {data.hasStalePrices && !dismissedStale && (
-                <div className="flex items-center justify-between gap-3 px-4 py-2.5 border border-[hsl(var(--chart-4))]/30 bg-[hsl(var(--chart-4))]/10 rounded-sm">
-                    <div className="flex items-center gap-2 text-[12px] text-foreground">
-                        <AlertTriangle className="h-3.5 w-3.5 text-[hsl(var(--chart-4))]" />
-                        <span>Some prices may be delayed — live market data unavailable.</span>
-                    </div>
-                    <button onClick={() => setDismissedStale(true)} className="text-muted-foreground hover:text-foreground transition-colors">
-                        <X className="h-3.5 w-3.5" />
-                    </button>
+                <div className="flex items-center gap-2 p-3 bg-amber-50 text-amber-900 border border-amber-200 rounded-md text-sm">
+                    <AlertTriangle className="w-4 h-4 text-amber-500" />
+                    <span>Live market data is currently unavailable. Prices shown may be delayed.</span>
                 </div>
             )}
 
-            {/* HERO — newspaper masthead style */}
-            <article className="ed-card relative px-6 md:px-10 py-8 md:py-10 overflow-hidden">
-                <span className="corner-mark corner-tl" />
-                <span className="corner-mark corner-tr" />
-                <span className="corner-mark corner-bl" />
-                <span className="corner-mark corner-br" />
-
-                {/* eyebrow row */}
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <span className="index-num tnum">№ 001</span>
-                        <span className="h-px w-8 bg-hairline" />
-                        <span className="eyebrow-strong">Net Worth — All Accounts</span>
-                    </div>
-                    <div className="hidden md:flex items-center gap-2 text-[11px] text-muted-foreground">
-                        <span className="live-dot" />
-                        <span className="eyebrow">
-                            {data.lastAnySync ? `Updated ${formatDateTime(data.lastAnySync)}` : 'Live'}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Hero value */}
-                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-                    <div className="flex items-end gap-4 md:gap-6">
-                        <p className="hero-amount text-[64px] md:text-[88px] text-foreground leading-none">
-                            {formatCurrency(data.totalCurrentValue)}
-                        </p>
-                        <div className="flex flex-col items-start gap-1 pb-3">
-                            <span
-                                className={cn(
-                                    'inline-flex items-center gap-1 text-sm font-semibold tnum font-mono',
-                                    plPositive ? 'text-[hsl(var(--gain))]' : 'text-[hsl(var(--loss))]',
-                                )}
-                            >
-                                {plPositive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
-                                {formatPercent(data.totalUnrealizedPLPercent)}
-                            </span>
-                            <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
-                                All-Time Return
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Description / kicker */}
-                    <div className="md:max-w-[260px] md:text-right border-t md:border-t-0 md:border-l border-border pt-4 md:pt-0 md:pl-6">
-                        <p className="display-serif italic text-[18px] md:text-[20px] text-foreground leading-tight mb-2">
-                            “A ledger reveals what intention conceals.”
-                        </p>
-                        <p className="eyebrow">From The Daily Ledger</p>
-                    </div>
-                </div>
-
-                {/* Sub-metrics row */}
-                <div className="mt-8 pt-6 border-t border-hairline grid grid-cols-1 sm:grid-cols-3 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-border">
-                    <div className="sm:pr-6">
-                        <SubMetric
-                            label="Invested"
-                            prefix="01"
-                            value={formatCurrency(data.totalInvestedValue)}
-                            valueClass="text-foreground"
-                        />
-                    </div>
-                    <div className="sm:px-6 pt-4 sm:pt-0">
-                        <SubMetric
-                            label="Today"
-                            prefix="02"
-                            value={`${dayPositive ? '+' : ''}${formatCurrency(data.totalDayGain)}`}
-                            valueClass={dayPositive ? 'text-[hsl(var(--gain))]' : 'text-[hsl(var(--loss))]'}
-                        />
-                        <p className={cn('mt-1 text-[11px] font-mono tnum', dayPositive ? 'text-[hsl(var(--gain))]' : 'text-[hsl(var(--loss))]')}>
-                            {data.totalDayGain !== 0 && Math.abs(data.totalDayGainPercent) < 0.01
-                                ? '< 0.01%'
-                                : formatPercent(data.totalDayGainPercent)}
-                        </p>
-                    </div>
-                    <div className="sm:pl-6 pt-4 sm:pt-0">
-                        <SubMetric
-                            label="Unrealized"
-                            prefix="03"
-                            value={`${plPositive ? '+' : ''}${formatCurrency(data.totalUnrealizedPL)}`}
-                            valueClass={plPositive ? 'text-[hsl(var(--gain))]' : 'text-[hsl(var(--loss))]'}
-                        />
-                        <p className={cn('mt-1 text-[11px] font-mono tnum', plPositive ? 'text-[hsl(var(--gain))]' : 'text-[hsl(var(--loss))]')}>
-                            {formatPercent(data.totalUnrealizedPLPercent)}
-                        </p>
-                    </div>
-                </div>
-            </article>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <MetricCard 
+                    title="Total Net Worth" 
+                    value={formatCurrency(data.totalCurrentValue)} 
+                    subtext="Across all linked accounts"
+                />
+                <MetricCard 
+                    title="Total Invested" 
+                    value={formatCurrency(data.totalInvestedValue)} 
+                    subtext="Total principal amount"
+                />
+                <MetricCard 
+                    title="Today's Return" 
+                    value={`${dayPositive ? '+' : ''}${formatCurrency(data.totalDayGain)}`} 
+                    trend={data.totalDayGainPercent}
+                    valueClass={dayPositive ? 'text-gain' : 'text-loss'}
+                />
+                <MetricCard 
+                    title="Overall Return" 
+                    value={`${plPositive ? '+' : ''}${formatCurrency(data.totalUnrealizedPL)}`} 
+                    trend={data.totalUnrealizedPLPercent}
+                    valueClass={plPositive ? 'text-gain' : 'text-loss'}
+                />
+            </div>
         </div>
     );
 }

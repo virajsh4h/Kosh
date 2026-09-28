@@ -5,50 +5,50 @@ import { HoldingsTable } from '@/components/dashboard/HoldingsTable';
 import { PortfolioSummary } from '@/components/dashboard/PortfolioSummary';
 import { RefreshButton } from '@/components/dashboard/RefreshButton';
 import { useAuth } from '@/contexts/AuthContext';
-
-function getGreeting() {
-    const h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
-}
+import { FileDown, Plus } from 'lucide-react';
 
 export default function DashboardPage() {
     const { user } = useAuth();
-    const firstName = user?.name?.split(' ')[0] || user?.username || 'reader';
-    const today = new Date();
-    const dateLine = today.toLocaleDateString('en-IN', {
-        weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
-    });
-
+    
     return (
-        <div className="space-y-8">
-            {/* Editorial masthead — newspaper page-header */}
-            <header className="relative pb-6 border-b border-hairline">
-                <div className="flex items-center justify-between gap-4 mb-5">
-                    <div className="flex items-center gap-3">
-                        <span className="index-num">FOLIO</span>
-                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                            {dateLine}
-                        </span>
-                    </div>
-                    <RefreshButton />
-                </div>
-                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-                    <h1 className="display-serif text-[44px] md:text-[64px] text-foreground">
-                        {getGreeting()}, <span className="text-[hsl(var(--accent))]">{firstName}</span>.
-                    </h1>
-                    <p className="text-[13px] text-muted-foreground max-w-sm md:text-right leading-relaxed font-serif italic">
-                        All your investments — equities, derivatives, mutuals — laid bare across the page.
+        <div className="space-y-6">
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Portfolio Overview</h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        Consolidated view of all linked assets and holdings.
                     </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button className="ed-btn ed-btn-ghost bg-card border shadow-sm h-9">
+                        <FileDown className="w-4 h-4 mr-2" />
+                        Export CSV
+                    </button>
+                    <button className="ed-btn ed-btn-primary h-9">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Client
+                    </button>
+                    <RefreshButton />
                 </div>
             </header>
 
             <BrokerStatusBanner />
 
-            <PortfolioSummary />
+            <div className="bg-card border shadow-sm rounded-lg p-6">
+                <PortfolioSummary />
+            </div>
 
-            <HoldingsTable />
+            <div className="bg-card border shadow-sm rounded-lg overflow-hidden">
+                <div className="px-6 py-4 border-b bg-muted/20 flex items-center justify-between">
+                    <h2 className="font-semibold text-lg">Current Holdings</h2>
+                    <input 
+                        type="search" 
+                        placeholder="Search holdings..." 
+                        className="h-8 w-64 rounded-md border border-input bg-background px-3 text-sm"
+                    />
+                </div>
+                <HoldingsTable />
+            </div>
         </div>
     );
 }
