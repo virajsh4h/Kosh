@@ -1,63 +1,38 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useQuery, useQueryClient, useIsFetching, useIsMutating } from "@tanstack/react-query";
-import { mutualFundAPI } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
-import { toast as sonnerToast } from "sonner";
-import { Download, Plus, AlertTriangle, Loader2 } from "lucide-react";
-import NewSchemeModal from "./NewSchemeModal";
+import { mutualFundAPI } from "@/lib/api/mutualFundAPI";
+import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
-
+import { useIsFetching, useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AlertTriangle, Download, Loader2, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast as sonnerToast } from "sonner";
 import DashboardTab from "./components/DashboardTab";
-import SchemeSummaryTab from "./components/SchemeSummaryTab";
-import ValuationTab from "./components/ValuationTab";
 import LumpsumTab from "./components/LumpsumTab";
+import NewSchemeModal from "./components/NewSchemeModal";
 import RedemptionTab from "./components/RedemptionTab";
+import SchemeSummaryTab from "./components/SchemeSummaryTab";
 import SipTab from "./components/SipTab";
+import ValuationTab from "./components/ValuationTab";
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard' },
-  { id: 'summary', label: 'Schemes' },
-  { id: 'lumpsum', label: 'Lumpsum Investment' },
-  { id: 'sip', label: 'SIP Details' },
-  { id: 'redemption', label: 'Redemption Details' },
-  { id: 'valuation', label: 'Investment & Valuation' },
+  { id: 'summary', label: 'Summary' },
+  { id: 'valuation', label: 'Valuation' },
+  { id: 'lumpsum', label: 'Lump Sums' },
+  { id: 'redemption', label: 'Redemptions' },
+  { id: 'sip', label: 'SIPs' },
 ];
 
-function formatCurrency(amount) {
-  if (amount === null || amount === undefined || isNaN(amount)) return "₹0.00";
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-  }).format(amount);
-}
-
-export default function MutualFundDashboard() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  
-  const activeTab = searchParams.get('tab') || 'dashboard';
-  
-  const setActiveTab = (tabId) => {
-    const params = new URLSearchParams(searchParams);
-    if (tabId === 'dashboard') {
-      params.delete('tab');
-    } else {
-      params.set('tab', tabId);
-    }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
+export default function MutualFundPage() {
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingScheme, setEditingScheme] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const isFetching = useIsFetching();
   const isMutating = useIsMutating();
   const [syncStatus, setSyncStatus] = useState("idle");
@@ -66,7 +41,7 @@ export default function MutualFundDashboard() {
     if (isFetching > 0 || isMutating > 0) {
       if (syncStatus !== "syncing") {
         setSyncStatus("syncing");
-        sonnerToast.loading("Syncing Background Data...", { id: "sync-toast" });
+        sonnerToast.loading("Syncing Data...", { id: "sync-toast" });
       }
     } else if (syncStatus === "syncing") {
       setSyncStatus("success");
@@ -106,7 +81,7 @@ export default function MutualFundDashboard() {
       window.URL.revokeObjectURL(url);
       toast({
         title: "Export Successful",
-        description: "Mutual Fund ledger downloaded as 5-tab Excel (.xlsx).",
+        description: "Mutual Fund ledger downloaded.",
       });
     } catch (error) {
       console.error("Export failed", error);
@@ -126,117 +101,89 @@ export default function MutualFundDashboard() {
   const isTotalProfit = absoluteGain >= 0;
 
   return (
-    <div className="space-y-8">
-      {/* HEADER */}
-      <header className="pb-6 border-b border-hairline flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="index-num">FOLIO·§09</span>
-            <span className="h-px w-8 bg-hairline" />
-            <span className="eyebrow">Equities & Wealth</span>
-          </div>
-          <h1 className="display-serif text-[40px] md:text-[56px] text-foreground leading-none">
-            Mutual <span className="italic text-[hsl(var(--accent))]">Funds</span>
-          </h1>
-
-          {summaryData && (
-            <div className="flex gap-8 mt-4 pt-2">
-              <div>
-                <p className="eyebrow text-muted-foreground mb-0.5">Total Invested</p>
-                <p className="font-mono text-xl font-bold">{formatCurrency(totalInvestment)}</p>
-              </div>
-              <div>
-                <p className="eyebrow text-muted-foreground mb-0.5">Current Value</p>
-                <p className="font-mono text-xl font-bold text-foreground">
-                  {formatCurrency(currentValue)}
-                </p>
-              </div>
-              {currentValue > 0 && (
-                <div>
-                  <p className="eyebrow text-muted-foreground mb-0.5">Overall P&L</p>
-                  <div
-                    className={cn(
-                      "flex items-end gap-1 font-mono text-xl font-bold",
-                      isTotalProfit ? "text-[hsl(var(--gain))]" : "text-[hsl(var(--loss))]"
-                    )}
-                  >
-                    <span>
-                      {isTotalProfit ? "+" : ""}
-                      {formatCurrency(absoluteGain)}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+    <div className="space-y-6">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Mutual Funds</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Track schemes, SIPs, lump sum investments, and redemptions.
+          </p>
         </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex items-center gap-2">
           <button
             disabled={isExporting}
             onClick={handleExport}
-            className="ed-btn bg-card text-foreground border-border hover:bg-muted disabled:opacity-50 flex items-center gap-2 justify-center"
+            className="ed-btn ed-btn-ghost bg-card border shadow-sm h-9"
           >
-            {isExporting ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <>
-                <Download className="h-3.5 w-3.5" />
-                <span>Export Ledger</span>
-              </>
-            )}
+            {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+            Export Excel
           </button>
-          <button onClick={() => { setEditingScheme(null); setIsModalOpen(true); }} className="ed-btn ed-btn-accent">
-            <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
-            <span>New Scheme</span>
+          <button onClick={() => { setEditingScheme(null); setIsModalOpen(true); }} className="ed-btn ed-btn-primary h-9">
+            <Plus className="w-4 h-4 mr-2" />
+            New Scheme
           </button>
         </div>
       </header>
 
-      {/* DISCREPANCY WARNING BANNER */}
-      {summaryData?.discrepancyFlag && (
-        <div className="p-4 rounded-sm border border-[hsl(var(--chart-4))]/40 bg-[hsl(var(--chart-4))]/10 flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-[hsl(var(--chart-4))] flex-shrink-0 mt-0.5" />
-          <div className="space-y-0.5 text-[12px]">
-            <p className="font-semibold text-foreground font-serif">
-              Valuation Snapshot Discrepancy Detected
+      {summaryData && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-card border rounded-lg p-5 shadow-sm">
+            <p className="text-sm font-medium text-muted-foreground">Total Invested</p>
+            <p className="text-2xl font-bold tracking-tight mt-1">{formatCurrency(totalInvestment)}</p>
+          </div>
+          <div className="bg-card border rounded-lg p-5 shadow-sm">
+            <p className="text-sm font-medium text-muted-foreground">Current Value</p>
+            <p className="text-2xl font-bold tracking-tight mt-1">{formatCurrency(currentValue)}</p>
+          </div>
+          <div className="bg-card border rounded-lg p-5 shadow-sm">
+            <p className="text-sm font-medium text-muted-foreground">Overall P&L</p>
+            <p className={cn("text-2xl font-bold tracking-tight mt-1", isTotalProfit ? "text-gain" : "text-loss")}>
+              {isTotalProfit ? "+" : ""}{formatCurrency(absoluteGain)}
             </p>
-            <p className="text-muted-foreground leading-relaxed">
+          </div>
+        </div>
+      )}
+
+      {summaryData?.discrepancyFlag && (
+        <div className="p-4 rounded-md border border-amber-200 bg-amber-50 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-amber-900 text-sm">Discrepancy Detected</p>
+            <p className="text-sm text-amber-800 mt-1">
               Discrepancies found between scheme transaction totals and logged valuation snapshots.
             </p>
           </div>
         </div>
       )}
 
-      {/* TABS */}
-      <div className="flex items-center gap-1.5 flex-wrap pb-4 border-b border-border">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              'h-7 px-3 text-[11px] font-mono tracking-[0.05em] border transition-colors rounded-sm',
-              activeTab === tab.id
-                ? 'bg-foreground text-background border-foreground'
-                : 'border-border text-muted-foreground hover:border-hairline hover:text-foreground'
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* TAB CONTENT */}
-      <div>
-        {activeTab === 'dashboard' && <DashboardTab summaryData={summaryData} />}
-        {activeTab === 'summary' && <SchemeSummaryTab 
-          onNewScheme={() => { setEditingScheme(null); setIsModalOpen(true); }} 
-          onEditScheme={(scheme) => { setEditingScheme(scheme); setIsModalOpen(true); }}
-        />}
-        {activeTab === 'valuation' && <ValuationTab />}
-        {activeTab === 'lumpsum' && <LumpsumTab />}
-        {activeTab === 'redemption' && <RedemptionTab />}
-        {activeTab === 'sip' && <SipTab />}
+      <div className="bg-card border shadow-sm rounded-lg overflow-hidden flex flex-col">
+        <div className="border-b bg-muted/20 px-2 pt-2 overflow-x-auto flex items-center gap-1">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                'px-4 py-2 text-sm font-medium transition-colors rounded-t-md relative whitespace-nowrap',
+                activeTab === tab.id
+                  ? 'bg-background text-foreground border-b-2 border-b-primary shadow-sm'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <div className="p-0">
+          {activeTab === 'dashboard' && <DashboardTab summaryData={summaryData} />}
+          {activeTab === 'summary' && <SchemeSummaryTab 
+            onNewScheme={() => { setEditingScheme(null); setIsModalOpen(true); }} 
+            onEditScheme={(scheme) => { setEditingScheme(scheme); setIsModalOpen(true); }}
+          />}
+          {activeTab === 'valuation' && <ValuationTab />}
+          {activeTab === 'lumpsum' && <LumpsumTab />}
+          {activeTab === 'redemption' && <RedemptionTab />}
+          {activeTab === 'sip' && <SipTab />}
+        </div>
       </div>
 
       <NewSchemeModal
@@ -245,28 +192,6 @@ export default function MutualFundDashboard() {
         onSuccess={handleSuccess}
         initialData={editingScheme}
       />
-
-      {/* SYNC INDICATOR
-      {syncStatus !== "idle" && (
-        <div className={cn(
-          "fixed bottom-6 right-6 z-50 px-4 py-2 rounded-full border shadow-lg flex items-center gap-2 text-[12px] font-mono animate-in fade-in slide-in-from-bottom-4 transition-all duration-300",
-          syncStatus === "syncing" 
-            ? "bg-background border-border text-muted-foreground" 
-            : "bg-[hsl(var(--gain))]/10 border-[hsl(var(--gain))]/20 text-[hsl(var(--gain))]"
-        )}>
-          {syncStatus === "syncing" ? (
-            <>
-              <Loader2 className="h-3 w-3 animate-spin" />
-              <span>Syncing Background Data...</span>
-            </>
-          ) : (
-            <>
-              <span className="text-[14px]">✓</span>
-              <span>Data Up to Date</span>
-            </>
-          )}
-        </div>
-      )} */}
     </div>
   );
 }

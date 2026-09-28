@@ -64,13 +64,13 @@ function StatusBadge({ status }) {
 function FdCard({ fd, onEdit, onCloseFd }) {
     return (
         <article
-            className="ed-card relative group cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md p-5 flex flex-col justify-between"
+            className="bg-card border shadow-sm rounded-lg overflow-hidden group cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md p-5 flex flex-col justify-between"
             onClick={() => onEdit(fd)}
         >
-            <span className="corner-mark corner-tl" />
-            <span className="corner-mark corner-tr" />
-            <span className="corner-mark corner-bl" />
-            <span className="corner-mark corner-br" />
+            
+            
+            
+            
 
             <div>
                 <div className="flex items-start justify-between mb-4">
@@ -147,11 +147,11 @@ function FdCard({ fd, onEdit, onCloseFd }) {
 
 function FdTable({ fds, onEdit, onCloseFd }) {
     return (
-        <div className="ed-card relative overflow-hidden">
-            <span className="corner-mark corner-tl" />
-            <span className="corner-mark corner-tr" />
-            <span className="corner-mark corner-bl" />
-            <span className="corner-mark corner-br" />
+        <div className="bg-card border shadow-sm rounded-lg overflow-hidden overflow-hidden">
+            
+            
+            
+            
 
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -551,7 +551,7 @@ export default function FixedDepositPage() {
             {isLoadingFds ? (
                 <div className={gridClass}>
                     {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="ed-card h-48 p-5 space-y-4">
+                        <div key={i} className="bg-card border shadow-sm rounded-lg overflow-hidden h-48 p-5 space-y-4">
                             <Skeleton className="h-5 w-1/2" />
                             <Skeleton className="h-4 w-1/3" />
                             <Skeleton className="h-12 w-full mt-4" />
@@ -559,11 +559,11 @@ export default function FixedDepositPage() {
                     ))}
                 </div>
             ) : fds.length === 0 ? (
-                <section className="ed-card relative px-8 py-16 text-center max-w-md mx-auto">
-                    <span className="corner-mark corner-tl" />
-                    <span className="corner-mark corner-tr" />
-                    <span className="corner-mark corner-bl" />
-                    <span className="corner-mark corner-br" />
+                <section className="bg-card border shadow-sm rounded-lg overflow-hidden px-8 py-16 text-center max-w-md mx-auto">
+                    
+                    
+                    
+                    
                     <Building2 className="h-7 w-7 text-muted-foreground mx-auto mb-4" strokeWidth={1.5} />
                     <p className="font-serif italic text-[24px] text-foreground mb-1">No deposits found.</p>
                     <p className="text-[12px] text-muted-foreground mb-5">

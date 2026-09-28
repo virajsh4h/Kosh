@@ -110,42 +110,17 @@ export default function CalculatorsPage() {
     return (
         <article className="space-y-12">
             {/* Masthead */}
-            <header>
-                <div className="flex items-baseline gap-3 mb-4">
-                    <span className="index-num tnum text-[11px]">[ §000 ]</span>
-                    <span className="eyebrow">The Reference · A complete index</span>
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Financial Calculators</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Tools to compute, project, and estimate your finances.</p>
                 </div>
-
-                <div className="grid lg:grid-cols-[1fr_auto] gap-6 lg:gap-10 items-end">
-                    <div>
-                        <h1 className="font-serif text-[clamp(40px,7vw,72px)] leading-[0.95] tracking-tight text-foreground">
-                            The Financial<br />
-                            <span className="italic text-[hsl(var(--accent))]">Calculators.</span>
-                        </h1>
-                        <p className="mt-4 font-serif italic text-[18px] text-muted-foreground leading-snug max-w-xl">
-                            A working set of {TOTAL} instruments — for the patient saver, the careful borrower, and the disciplined investor.
-                        </p>
-                    </div>
-
-                    <div className="text-left lg:text-right space-y-1 lg:pl-8 lg:border-l border-hairline">
-                        <p className="eyebrow">Edition</p>
-                        <p className="font-serif italic text-[15px] text-foreground" suppressHydrationWarning>
-                            {dateString || '—'}
-                        </p>
-                        <div className="pt-2 flex lg:justify-end items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                            <span className="live-dot" />
-                            <span>{TOTAL} entries · {CATEGORIES.length} sections</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-8 rule-strong-h" />
             </header>
 
             {/* Search */}
             <section>
                 <div className="grid lg:grid-cols-[1fr_minmax(0,420px)] gap-4 items-baseline">
-                    <p className="font-serif italic text-[15px] text-muted-foreground">
+                    <p className="font-sans italic text-[15px] text-muted-foreground">
                         Search the index by name or by what it computes — for instance, <span className="not-italic font-mono text-foreground">retirement</span>, <span className="not-italic font-mono text-foreground">EMI</span>, <span className="not-italic font-mono text-foreground">GST</span>.
                     </p>
                     <div className="relative">
@@ -155,7 +130,7 @@ export default function CalculatorsPage() {
                             placeholder="Search calculators…"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9 pr-3 h-11 w-full bg-background border border-hairline font-mono text-[13px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition-colors"
+                            className="pl-9 pr-3 h-11 w-full bg-background border border-border font-mono text-[13px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition-colors"
                         />
                     </div>
                 </div>
@@ -172,14 +147,14 @@ export default function CalculatorsPage() {
                     const Icon = category.icon;
                     return (
                         <section key={category.id} className="space-y-5">
-                            <div className="flex items-baseline justify-between gap-4 border-b border-hairline pb-3">
+                            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
                                 <div className="flex items-baseline gap-3 min-w-0">
                                     <span className="display-num text-[12px] text-[hsl(var(--accent))] flex-shrink-0">
                                         {category.index}
                                     </span>
                                     <div className="min-w-0">
                                         <p className="eyebrow">{category.kicker}</p>
-                                        <h2 className="font-serif text-[26px] sm:text-[30px] leading-none tracking-tight text-foreground flex items-baseline gap-2.5 mt-1">
+                                        <h2 className="font-sans text-[26px] sm:text-[30px] leading-none tracking-tight text-foreground flex items-baseline gap-2.5 mt-1">
                                             <Icon size={16} className="text-muted-foreground translate-y-0.5" aria-hidden="true" />
                                             <span>{category.name}</span>
                                         </h2>
@@ -190,7 +165,7 @@ export default function CalculatorsPage() {
                                 </p>
                             </div>
 
-                            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-hairline border border-hairline">
+                            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border rounded-lg overflow-hidden">
                                 {category.calculators.map((calc, i) => (
                                     <li key={calc.id} className="bg-background">
                                         <Link
@@ -202,7 +177,7 @@ export default function CalculatorsPage() {
                                                     <p className="display-num text-[10px] text-muted-foreground mb-1.5 group-hover:text-[hsl(var(--accent))] transition-colors">
                                                         {category.index}.{String(i + 1).padStart(2, '0')}
                                                     </p>
-                                                    <h3 className="font-serif text-[18px] leading-snug text-foreground truncate">
+                                                    <h3 className="font-sans text-[18px] leading-snug text-foreground truncate">
                                                         {calc.name}
                                                     </h3>
                                                     <p className="mt-1 text-[12px] text-muted-foreground leading-relaxed line-clamp-2">
@@ -222,10 +197,10 @@ export default function CalculatorsPage() {
                     );
                 })
             ) : (
-                <div className="border border-hairline px-6 py-16 text-center">
+                <div className="border border-border px-6 py-16 text-center">
                     <Search size={28} className="text-muted-foreground/50 mx-auto mb-4" aria-hidden="true" />
-                    <h2 className="font-serif text-[22px] text-foreground">No matching entries</h2>
-                    <p className="mt-2 font-serif italic text-[15px] text-muted-foreground">
+                    <h2 className="font-sans text-[22px] text-foreground">No matching entries</h2>
+                    <p className="mt-2 font-sans italic text-[15px] text-muted-foreground">
                         We could not find anything for <span className="not-italic font-mono text-foreground">“{search}”</span>. Try a different word.
                     </p>
                     <button
@@ -238,10 +213,10 @@ export default function CalculatorsPage() {
             )}
 
             {/* Disclaimer */}
-            <section className="border-t border-hairline pt-8">
+            <section className="border-t border-border pt-8">
                 <div className="border-l-2 border-foreground/70 pl-5 max-w-3xl mx-auto">
                     <p className="eyebrow-strong mb-1">Editor’s note</p>
-                    <p className="font-serif italic text-[15px] text-muted-foreground leading-snug">
+                    <p className="font-sans italic text-[15px] text-muted-foreground leading-snug">
                         All figures are produced for reference only. Tax brackets, scheme rates, and market assumptions change; verify with a qualified adviser before acting on any number you find here.
                     </p>
                 </div>

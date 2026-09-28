@@ -561,98 +561,10 @@ export default function EpfPage() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <header className="pb-6 border-b border-hairline flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                        <span className="index-num">FOLIO·§08</span>
-                        <span className="h-px w-8 bg-hairline" />
-                        <span className="eyebrow">Retirement & Statutory Funds</span>
-                    </div>
-                    <h1 className="display-serif text-[40px] md:text-[56px] text-foreground leading-none">
-                        Employee Provident <span className="italic text-[hsl(var(--accent))]">Fund</span>
-                    </h1>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3 mt-4 pt-4 border-t border-border/50">
-                        <div>
-                            <p className="eyebrow text-muted-foreground">
-                                {financialYear ? `EPF FY ${financialYear}` : 'EPF Balance'}
-                            </p>
-                            <p className="font-mono text-lg font-bold text-foreground">{formatCurrency(computedSummary.currentEpfBalance)}</p>
-                        </div>
-                        <div>
-                            <p className="eyebrow text-muted-foreground">
-                                {financialYear ? `EPS FY ${financialYear}` : 'EPS Balance'}
-                            </p>
-                            <p className="font-mono text-base font-semibold text-muted-foreground">{formatCurrency(computedSummary.currentEpsBalance)}</p>
-                        </div>
-                        <div>
-                            <p className="eyebrow text-muted-foreground">Employee Share</p>
-                            <p className="font-mono text-xs font-medium text-foreground">{formatCurrency(computedSummary.totalEmployeeContribution)}</p>
-                        </div>
-                        <div>
-                            <p className="eyebrow text-muted-foreground">Employer EPF Share</p>
-                            <p className="font-mono text-xs font-medium text-[hsl(var(--gain))]">{formatCurrency(computedSummary.totalEmployerEpfContribution)}</p>
-                        </div>
-                        <div>
-                            <p className="eyebrow text-muted-foreground">Employer EPS Share</p>
-                            <p className="font-mono text-xs font-medium text-[hsl(var(--accent))]">{formatCurrency(computedSummary.totalEmployerEpsContribution)}</p>
-                        </div>
-                        <div>
-                            <p className="eyebrow text-muted-foreground">Accrued Interest (FY)</p>
-                            <p className="font-mono text-xs font-semibold text-[hsl(var(--accent))]" title="Uncredited live projection for current financial year">
-                                {formatCurrency(computedSummary.interestAccruedThisFyEpf)}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2.5">
-                    <button
-                        onClick={() => setIsSettingsOpen(true)}
-                        className="ed-btn bg-card text-foreground border-border hover:bg-muted flex items-center gap-1.5"
-                    >
-                        <Settings className="h-3.5 w-3.5" />
-                        <span>Settings</span>
-                    </button>
-                    <button
-                        onClick={() => setIsRatesOpen(true)}
-                        className="ed-btn bg-card text-foreground border-border hover:bg-muted flex items-center gap-1.5"
-                    >
-                        <Percent className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
-                        <span>Rates</span>
-                    </button>
-                    <button
-                        disabled={isExporting}
-                        onClick={async () => {
-                            setIsExporting(true);
-                            try {
-                                const params = { sortBy: 'transactionDate', sortDir: 'asc' };
-                                if (financialYear) params.financialYear = financialYear;
-                                if (modeFilter) params.mode = modeFilter;
-                                const blobData = await epfAPI.exportCSV(params);
-                                const url = window.URL.createObjectURL(new Blob([blobData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-                                const link = document.createElement('a');
-                                link.href = url;
-                                link.setAttribute('download', 'epf_ledger_export.xlsx');
-                                document.body.appendChild(link);
-                                link.click();
-                                link.parentNode.removeChild(link);
-                                window.URL.revokeObjectURL(url);
-                                toast({ title: 'Export Successful', description: 'EPF ledger downloaded as Excel (.xlsx).' });
-                            } catch (err) {
-                                console.error('[Export Error]', err);
-                                toast({ title: 'Export Failed', description: 'Could not export file.', variant: 'destructive' });
-                            } finally {
-                                setIsExporting(false);
-                            }
-                        }}
-                        className="ed-btn bg-card text-foreground border-border hover:bg-muted disabled:opacity-50 flex items-center gap-1.5"
-                    >
-                        {isExporting ? <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> : <span>Export Excel</span>}
-                    </button>
-                    <button onClick={openCreate} className="ed-btn ed-btn-accent flex items-center gap-1.5">
-                        <Plus className="h-3.5 w-3.5" strokeWidth={2.5} /> New Entry
-                    </button>
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Employees Provident Fund</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Monitor your EPF/VPF balances and employer contributions.</p>
                 </div>
             </header>
 
@@ -701,13 +613,13 @@ export default function EpfPage() {
 
             {/* Main Content List / Table */}
             {isLoadingTxns ? (
-                <div className="ed-card p-6"><EpfTableSkeleton /></div>
+                <div className="bg-card border shadow-sm rounded-lg overflow-hidden p-6"><EpfTableSkeleton /></div>
             ) : transactions.length === 0 && (!financialYear || !interestSheet) ? (
-                <section className="ed-card relative px-8 py-16 text-center max-w-md mx-auto">
-                    <span className="corner-mark corner-tl" />
-                    <span className="corner-mark corner-tr" />
-                    <span className="corner-mark corner-bl" />
-                    <span className="corner-mark corner-br" />
+                <section className="bg-card border shadow-sm rounded-lg overflow-hidden px-8 py-16 text-center max-w-md mx-auto">
+                    
+                    
+                    
+                    
                     <PiggyBank className="h-8 w-8 text-muted-foreground mx-auto mb-4" strokeWidth={1.5} />
                     <p className="font-serif italic text-[24px] text-foreground mb-1">EPF ledger is empty.</p>
                     <p className="text-[12px] text-muted-foreground mb-5">
@@ -719,11 +631,11 @@ export default function EpfPage() {
                 </section>
             ) : (
                 <div className="space-y-8">
-                    <div className="ed-card relative overflow-hidden">
-                            <span className="corner-mark corner-tl" />
-                            <span className="corner-mark corner-tr" />
-                            <span className="corner-mark corner-bl" />
-                            <span className="corner-mark corner-br" />
+                    <div className="bg-card border shadow-sm rounded-lg overflow-hidden overflow-hidden">
+                            
+                            
+                            
+                            
 
                             <div className="overflow-x-auto animate-fadeIn">
                                 {financialYear && interestSheet ? (

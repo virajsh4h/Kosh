@@ -237,25 +237,21 @@ export default function ProfilePage() {
 
     return (
         <div className="space-y-10">
-            <header className="pb-6 border-b border-hairline">
-                <div className="flex items-center gap-3 mb-4">
-                    <span className="index-num">FOLIO·§06</span>
-                    <span className="h-px w-8 bg-hairline" />
-                    <span className="eyebrow">Press Credential</span>
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">User Profile</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Manage your account settings, security, and preferences.</p>
                 </div>
-                <h1 className="display-serif text-[40px] md:text-[56px] text-foreground">
-                    Profile <span className="italic text-[hsl(var(--accent))]">&amp;</span> Identity
-                </h1>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-8">
                 {/* IDENTITY CARD */}
                 <aside className="space-y-6">
-                    <article className="ed-card relative overflow-hidden">
-                        <span className="corner-mark corner-tl" />
-                        <span className="corner-mark corner-tr" />
-                        <span className="corner-mark corner-bl" />
-                        <span className="corner-mark corner-br" />
+                    <article className="bg-card border shadow-sm rounded-lg overflow-hidden overflow-hidden">
+                        
+                        
+                        
+                        
 
                         {/* Press tag header */}
                         <div className="bg-foreground text-background px-5 py-3 flex items-center justify-between">
@@ -307,9 +303,9 @@ export default function ProfilePage() {
 
                     {/* Portfolio mini metrics */}
                     {portfolioSummary && (
-                        <div className="ed-card relative p-5">
-                            <span className="corner-mark corner-tl" />
-                            <span className="corner-mark corner-br" />
+                        <div className="bg-card border shadow-sm rounded-lg overflow-hidden p-5">
+                            
+                            
                             <p className="eyebrow-strong mb-3">At a glance</p>
                             <dl className="space-y-3">
                                 <div className="flex justify-between items-baseline pb-2 border-b border-border">
@@ -338,9 +334,9 @@ export default function ProfilePage() {
                 {/* MAIN — Personal info, security, notifications */}
                 <div className="space-y-6">
                     {/* Personal Information */}
-                    <section className="ed-card relative">
-                        <span className="corner-mark corner-tl" />
-                        <span className="corner-mark corner-br" />
+                    <section className="bg-card border shadow-sm rounded-lg overflow-hidden">
+                        
+                        
 
                         <header className="flex items-center justify-between px-6 py-4 border-b border-hairline">
                             <div className="flex items-baseline gap-3">
@@ -391,9 +387,9 @@ export default function ProfilePage() {
                     </section>
 
                     {/* Security */}
-                    <section className="ed-card relative">
-                        <span className="corner-mark corner-tl" />
-                        <span className="corner-mark corner-br" />
+                    <section className="bg-card border shadow-sm rounded-lg overflow-hidden">
+                        
+                        
 
                         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-6 py-4 border-b border-hairline">
                             <div className="flex items-baseline gap-3">
@@ -657,9 +653,9 @@ export default function ProfilePage() {
                     </section>
 
                     {/* Notifications */}
-                    <section className="ed-card relative">
-                        <span className="corner-mark corner-tl" />
-                        <span className="corner-mark corner-br" />
+                    <section className="bg-card border shadow-sm rounded-lg overflow-hidden">
+                        
+                        
 
                         <header className="px-6 py-4 border-b border-hairline flex items-baseline gap-3">
                             <span className="index-num tnum">[ III ]</span>

@@ -16,18 +16,24 @@ function relativeTime(iso) {
     return `${Math.floor(h / 24)}d ago`;
 }
 
-const BROKER_ACCENT_VAR = {
-    ZERODHA:   '--broker-zerodha',
-    ANGEL_ONE: '--broker-angel',
-    UPSTOX:    '--broker-upstox',
+const BROKER_COLOR = {
+    ZERODHA:   'text-orange-600 bg-orange-100 border-orange-200',
+    ANGEL_ONE: 'text-blue-600 bg-blue-100 border-blue-200',
+    UPSTOX:    'text-purple-600 bg-purple-100 border-purple-200',
+};
+
+const BROKER_BORDER = {
+    ZERODHA:   'border-t-orange-500',
+    ANGEL_ONE: 'border-t-blue-500',
+    UPSTOX:    'border-t-purple-500',
 };
 
 function StatusPill({ isConnected, isExpiringSoon, isExpired, isLoading }) {
-    if (isLoading) return <Skeleton className="h-5 w-20 rounded-sm" />;
-    if (isExpired) return <span className="ed-pill ed-pill-loss">Expired</span>;
-    if (isExpiringSoon) return <span className="ed-pill ed-pill-warn">Expiring</span>;
-    if (isConnected) return <span className="ed-pill ed-pill-gain"><span className="live-dot" />Live</span>;
-    return <span className="ed-pill">Not connected</span>;
+    if (isLoading) return <Skeleton className="h-5 w-20 rounded-md" />;
+    if (isExpired) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">Expired</span>;
+    if (isExpiringSoon) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200">Expiring Soon</span>;
+    if (isConnected) return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />Live</span>;
+    return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border">Not connected</span>;
 }
 
 export function BrokerCard({ broker, index = 0 }) {
@@ -39,21 +45,16 @@ export function BrokerCard({ broker, index = 0 }) {
     const lastSyncedAt = status?.lastSuccessAt;
     const ctaLabel = isExpired ? 'Reconnect' : isConnected ? 'Manage' : 'Connect';
 
-    const accentVar = BROKER_ACCENT_VAR[broker.key] || '--accent';
-    const accentColor = `hsl(var(${accentVar}))`;
+    const colorClasses = BROKER_COLOR[broker.key] || 'text-primary bg-primary/10 border-primary/20';
+    const borderTopClass = BROKER_BORDER[broker.key] || 'border-t-primary';
 
     return (
-        <article
-            className="ed-card relative group transition-transform"
-            style={{ borderTopWidth: '3px', borderTopColor: accentColor }}
-        >
-            <span className="corner-mark corner-bl" />
-            <span className="corner-mark corner-br" />
-
-            <div className="p-6">
-                {/* Eyebrow row */}
-                <div className="flex items-baseline justify-between mb-5">
-                    <span className="index-num tnum">№ {String(index + 1).padStart(2, '0')} — Vendor</span>
+        <article className={cn("bg-card border rounded-lg shadow-sm overflow-hidden flex flex-col transition-shadow hover:shadow-md", borderTopClass)} style={{ borderTopWidth: '4px' }}>
+            <div className="p-5 flex-1">
+                <div className="flex items-start justify-between mb-4">
+                    <div className={cn("w-12 h-12 flex items-center justify-center rounded-lg border font-bold text-lg", colorClasses)}>
+                        {broker.initials}
+                    </div>
                     <StatusPill
                         isConnected={isConnected}
                         isExpiringSoon={isExpiringSoon}
@@ -62,59 +63,44 @@ export function BrokerCard({ broker, index = 0 }) {
                     />
                 </div>
 
-                {/* Identity */}
-                <div className="flex items-start gap-4 mb-5">
-                    <div
-                        className="h-14 w-14 flex items-center justify-center rounded-sm font-mono font-bold text-[15px] tracking-wider flex-shrink-0"
-                        style={{
-                            color: accentColor,
-                            background: `hsl(var(${accentVar}) / 0.08)`,
-                            border: `1px solid hsl(var(${accentVar}) / 0.35)`,
-                        }}
-                    >
-                        {broker.initials}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                        <h3 className="font-serif text-[26px] text-foreground leading-tight tracking-tight">{broker.displayName}</h3>
-                        <p className="text-[12px] text-muted-foreground mt-1 font-serif italic">{broker.tagline}</p>
-                    </div>
+                <div className="mb-4">
+                    <h3 className="font-semibold text-lg text-foreground">{broker.displayName}</h3>
+                    <p className="text-sm text-muted-foreground mt-0.5">{broker.tagline}</p>
                 </div>
 
-                {/* Capabilities */}
-                <div className="mb-5 pt-5 border-t border-border">
-                    <p className="eyebrow mb-3">Capabilities</p>
-                    <ul className="grid grid-cols-2 gap-y-1.5 gap-x-3">
+                <div className="pt-4 border-t border-border">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Supported Features</span>
+                    <ul className="grid grid-cols-2 gap-y-2 gap-x-2">
                         {broker.capabilities.map((cap) => (
-                            <li key={cap} className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                                <Check className="h-3 w-3 text-[hsl(var(--gain))] flex-shrink-0" strokeWidth={2.5} />
+                            <li key={cap} className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Check className="h-3.5 w-3.5 text-green-500 flex-shrink-0" />
                                 {cap}
                             </li>
                         ))}
                     </ul>
                 </div>
+            </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between gap-2 pt-5 border-t border-hairline">
-                    {isConnected && lastSyncedAt ? (
-                        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
-                            <Clock className="h-2.5 w-2.5" />
-                            {relativeTime(lastSyncedAt)}
-                        </span>
-                    ) : (
-                        <span className="text-[10px] text-muted-foreground/60 font-mono">—</span>
+            <div className="px-5 py-4 bg-muted/20 border-t flex items-center justify-between">
+                {isConnected && lastSyncedAt ? (
+                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="h-3.5 w-3.5" />
+                        {relativeTime(lastSyncedAt)}
+                    </span>
+                ) : (
+                    <span className="text-xs text-muted-foreground/60">—</span>
+                )}
+
+                <Link
+                    href={broker.setupPath}
+                    className={cn(
+                        'ed-btn h-8 text-xs',
+                        isConnected ? 'ed-btn-ghost bg-background border' : isExpired ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' : 'ed-btn-primary'
                     )}
-
-                    <Link
-                        href={broker.setupPath}
-                        className={cn(
-                            'ed-btn',
-                            isConnected ? 'ed-btn-ghost' : isExpired ? 'ed-btn-accent' : 'ed-btn-primary'
-                        )}
-                    >
-                        {ctaLabel}
-                        <ArrowRight className="h-3 w-3" strokeWidth={2} />
-                    </Link>
-                </div>
+                >
+                    {ctaLabel}
+                    <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                </Link>
             </div>
         </article>
     );

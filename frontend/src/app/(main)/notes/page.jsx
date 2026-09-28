@@ -49,7 +49,7 @@ function NoteCard({ note, onEdit, onDelete, onPin, index }) {
 
     return (
         <article
-            className="ed-card relative group cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md p-4 flex flex-col min-h-[180px]"
+            className="bg-card border shadow-sm rounded-lg overflow-hidden group cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md p-4 flex flex-col min-h-[180px]"
             onClick={() => onEdit(note)}
             style={{
                 background: accent.tint,
@@ -59,8 +59,8 @@ function NoteCard({ note, onEdit, onDelete, onPin, index }) {
                 borderBottom: '1px solid hsl(var(--border))',
             }}
         >
-            <span className="corner-mark corner-bl" />
-            <span className="corner-mark corner-br" />
+            
+            
 
             <div className="flex items-baseline justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ function NoteCard({ note, onEdit, onDelete, onPin, index }) {
 
 function NoteCardSkeleton() {
     return (
-        <div className="ed-card relative p-4 space-y-2">
+        <div className="bg-card border shadow-sm rounded-lg overflow-hidden p-4 space-y-2">
             <Skeleton className="h-3 w-1/3 rounded-sm" />
             <Skeleton className="h-5 w-3/4 rounded-sm" />
             <Skeleton className="h-3 w-full rounded-sm" />
@@ -241,23 +241,11 @@ export default function NotesPage() {
     return (
         <div className="space-y-8">
             {/* Masthead */}
-            <header className="pb-6 border-b border-hairline flex items-end justify-between gap-6">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                        <span className="index-num">FOLIO·§05</span>
-                        <span className="h-px w-8 bg-hairline" />
-                        <span className="eyebrow">Margin Annotations</span>
-                    </div>
-                    <h1 className="display-serif text-[40px] md:text-[56px] text-foreground">
-                        Field <span className="italic text-[hsl(var(--accent))]">Notes</span>
-                    </h1>
-                    <p className="text-[13px] text-muted-foreground font-serif italic max-w-md">
-                        {totalElements} entr{totalElements !== 1 ? 'ies' : 'y'} — observations, thesis, errata, ideas.
-                    </p>
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Financial Notes</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Keep track of financial goals, strategies, and reminders.</p>
                 </div>
-                <button onClick={openCreate} className="ed-btn ed-btn-accent">
-                    <Plus className="h-3 w-3" strokeWidth={2.5} /> New Entry
-                </button>
             </header>
 
             {/* Filters */}
@@ -297,11 +285,11 @@ export default function NotesPage() {
                     {Array.from({ length: 8 }).map((_, i) => <NoteCardSkeleton key={i} />)}
                 </div>
             ) : notes.length === 0 ? (
-                <section className="ed-card relative px-8 py-16 text-center max-w-md mx-auto">
-                    <span className="corner-mark corner-tl" />
-                    <span className="corner-mark corner-tr" />
-                    <span className="corner-mark corner-bl" />
-                    <span className="corner-mark corner-br" />
+                <section className="bg-card border shadow-sm rounded-lg overflow-hidden px-8 py-16 text-center max-w-md mx-auto">
+                    
+                    
+                    
+                    
                     <StickyNote className="h-7 w-7 text-muted-foreground mx-auto mb-4" strokeWidth={1.5} />
                     <p className="font-serif italic text-[24px] text-foreground mb-1">
                         {search ? 'No matches found.' : 'The pages are blank.'}

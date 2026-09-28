@@ -208,109 +208,10 @@ export default function PpfPage() {
 
     return (
         <div className="space-y-8">
-            <header className="pb-6 border-b border-hairline flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                        <span className="index-num">FOLIO·§07</span>
-                        <span className="h-px w-8 bg-hairline" />
-                        <span className="eyebrow">Government Schemes</span>
-                    </div>
-                    <h1 className="display-serif text-[40px] md:text-[56px] text-foreground leading-none">
-                        Public Provident <span className="italic text-[hsl(var(--accent))]">Fund</span>
-                    </h1>
-
-                    {/* Account info strip */}
-                    {(settingsData?.accountNumber || settingsData?.dateOfIssue) && (
-                        <div className="flex flex-wrap gap-x-8 gap-y-1 mt-1">
-                            {settingsData?.accountNumber && (
-                                <div className="flex items-center gap-2">
-                                    <span className="eyebrow text-muted-foreground">Account No.</span>
-                                    <span className="font-mono text-[13px] font-semibold text-foreground tracking-wider">
-                                        {settingsData.accountNumber}
-                                    </span>
-                                </div>
-                            )}
-                            {settingsData?.dateOfIssue && (
-                                <div className="flex items-center gap-2">
-                                    <span className="eyebrow text-muted-foreground">Date of Issue</span>
-                                    <span className="font-mono text-[13px] text-foreground">
-                                        {formatDate(settingsData.dateOfIssue)}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    <div className="flex flex-wrap gap-x-8 gap-y-4 mt-4">
-                        <div>
-                            <p className="eyebrow text-muted-foreground">
-                                {financialYear ? `FY ${financialYear} Ending Balance` : 'Current Balance'}
-                            </p>
-                            <p className="font-mono text-xl font-bold">{formatCurrency(computedSummary.currentBalance)}</p>
-                        </div>
-                        <div>
-                            <p className="eyebrow text-muted-foreground">
-                                {financialYear ? `Deposits in FY ${financialYear}` : 'Total Deposits'}
-                            </p>
-                            <p className="font-mono text-sm font-semibold text-[hsl(var(--gain))]">{formatCurrency(computedSummary.totalDeposits)}</p>
-                        </div>
-                        <div>
-                            <p className="eyebrow text-muted-foreground">
-                                {financialYear ? `Interest Credited in FY ${financialYear}` : 'Interest Credited'}
-                            </p>
-                            <p className="font-mono text-sm font-semibold text-[hsl(var(--accent))]">{formatCurrency(computedSummary.totalInterestCredited)}</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                        onClick={() => setIsSettingsOpen(true)}
-                        className="ed-btn bg-card text-foreground border-border hover:bg-muted flex items-center gap-1.5"
-                    >
-                        <Settings className="h-3.5 w-3.5" />
-                        <span>Account</span>
-                    </button>
-                    <button
-                        disabled={isExporting}
-                        onClick={async () => {
-                            setIsExporting(true);
-                            try {
-                                const params = {
-                                    sortBy: 'transactionDate',
-                                    sortDir: 'asc',
-                                };
-                                if (financialYear) params.financialYear = financialYear;
-                                const blobData = await ppfAPI.exportCSV(params);
-                                const url = window.URL.createObjectURL(new Blob([blobData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-                                const link = document.createElement('a');
-                                link.href = url;
-                                link.setAttribute('download', 'ppf_ledger_export.xlsx');
-                                document.body.appendChild(link);
-                                link.click();
-                                link.parentNode.removeChild(link);
-                                window.URL.revokeObjectURL(url);
-                                toast({ title: 'Export Successful', description: 'PPF ledger downloaded as Excel (.xlsx).' });
-                            } catch (err) {
-                                console.error('[Export Error]', err);
-                                toast({ title: 'Export Failed', description: 'Could not export Excel file.', variant: 'destructive' });
-                            } finally {
-                                setIsExporting(false);
-                            }
-                        }}
-                        className="ed-btn bg-card text-foreground border-border hover:bg-muted disabled:opacity-50 flex items-center gap-2"
-                    >
-                        {isExporting ? (
-                            <>
-                                <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-                                <span>Exporting...</span>
-                            </>
-                        ) : (
-                            <span>Export Excel</span>
-                        )}
-                    </button>
-                    <button onClick={openCreate} className="ed-btn ed-btn-accent">
-                        <Plus className="h-3 w-3" strokeWidth={2.5} /> New Entry
-                    </button>
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Public Provident Fund</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Track your PPF contributions, interest, and maturity.</p>
                 </div>
             </header>
 
@@ -334,13 +235,13 @@ export default function PpfPage() {
             </div>
 
             {isLoadingTxns ? (
-                <div className="ed-card p-6"><PpfTableSkeleton /></div>
+                <div className="bg-card border shadow-sm rounded-lg overflow-hidden p-6"><PpfTableSkeleton /></div>
             ) : transactions.length === 0 ? (
-                <section className="ed-card relative px-8 py-16 text-center max-w-md mx-auto">
-                    <span className="corner-mark corner-tl" />
-                    <span className="corner-mark corner-tr" />
-                    <span className="corner-mark corner-bl" />
-                    <span className="corner-mark corner-br" />
+                <section className="bg-card border shadow-sm rounded-lg overflow-hidden px-8 py-16 text-center max-w-md mx-auto">
+                    
+                    
+                    
+                    
                     <Landmark className="h-7 w-7 text-muted-foreground mx-auto mb-4" strokeWidth={1.5} />
                     <p className="font-serif italic text-[24px] text-foreground mb-1">Ledger is empty.</p>
                     <p className="text-[12px] text-muted-foreground mb-5">
@@ -352,11 +253,11 @@ export default function PpfPage() {
                 </section>
             ) : (
                 <div className="space-y-8">
-                    <div className="ed-card relative overflow-hidden">
-                        <span className="corner-mark corner-tl" />
-                        <span className="corner-mark corner-tr" />
-                        <span className="corner-mark corner-bl" />
-                        <span className="corner-mark corner-br" />
+                    <div className="bg-card border shadow-sm rounded-lg overflow-hidden overflow-hidden">
+                        
+                        
+                        
+                        
                         
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">

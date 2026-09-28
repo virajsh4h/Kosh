@@ -115,13 +115,13 @@ function GsCard({ item, onEdit, onToggleRateMode }) {
 
     return (
         <article
-            className="ed-card relative group cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md p-5 flex flex-col justify-between"
+            className="bg-card border shadow-sm rounded-lg overflow-hidden group cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md p-5 flex flex-col justify-between"
             onClick={() => onEdit(item)}
         >
-            <span className="corner-mark corner-tl" />
-            <span className="corner-mark corner-tr" />
-            <span className="corner-mark corner-bl" />
-            <span className="corner-mark corner-br" />
+            
+            
+            
+            
 
             <div>
                 <div className="flex items-start justify-between mb-4">
@@ -195,11 +195,11 @@ function GsCard({ item, onEdit, onToggleRateMode }) {
 
 function GsTable({ data, onEdit, onToggleRateMode }) {
     return (
-        <div className="ed-card relative overflow-hidden">
-            <span className="corner-mark corner-tl" />
-            <span className="corner-mark corner-tr" />
-            <span className="corner-mark corner-bl" />
-            <span className="corner-mark corner-br" />
+        <div className="bg-card border shadow-sm rounded-lg overflow-hidden overflow-hidden">
+            
+            
+            
+            
 
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -411,118 +411,10 @@ export default function GoldSilverPage() {
 
     return (
         <div className="space-y-8">
-            <header className="pb-6 border-b border-hairline flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                        <span className="index-num">FOLIO·§07</span>
-                        <span className="h-px w-8 bg-hairline" />
-                        <span className="eyebrow">Precious Metals</span>
-                    </div>
-                    <h1 className="display-serif text-[40px] md:text-[56px] text-foreground leading-none">
-                        Gold & <span className="italic text-[hsl(var(--accent))]">Silver</span>
-                    </h1>
-
-                    {summaryData && (
-                        <div className="flex gap-8 mt-4 pt-2">
-                            <div>
-                                <p className="eyebrow text-muted-foreground mb-0.5">Total Invested</p>
-                                <p className="font-mono text-xl font-bold">{formatCurrency(summaryData.totalInvested)}</p>
-                            </div>
-                            <div>
-                                <p className="eyebrow text-muted-foreground mb-0.5">Current Value</p>
-                                <p className="font-mono text-xl font-bold text-foreground">
-                                    {summaryData.currentValue ? formatCurrency(summaryData.currentValue) : '—'}
-                                </p>
-                            </div>
-                            {summaryData.currentValue > 0 && (
-                                <div>
-                                    <p className="eyebrow text-muted-foreground mb-0.5">Overall P&L</p>
-                                    <div className={cn("flex items-end gap-1 font-mono text-xl font-bold", isTotalProfit ? "text-[hsl(var(--gain))]" : "text-[hsl(var(--loss))]")}>
-                                        <span>{isTotalProfit ? '+' : ''}{formatCurrency(summaryData.overallProfitLoss)}</span>
-                                        <span className="text-[12px] font-medium mb-1">({summaryData.overallReturnPercent}%)</span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex flex-col gap-3">
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        <button
-                            onClick={handleForceRefreshRates}
-                            disabled={isRefreshingRates}
-                            className="ed-btn bg-card text-foreground border-border hover:bg-muted transition-colors flex items-center gap-2"
-                            title="Force live market rate refresh from GoldAPI"
-                        >
-                            <RefreshCw className={cn("h-3.5 w-3.5", isRefreshingRates && "animate-spin")} />
-                            <span>Refresh Rates</span>
-                        </button>
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button className="ed-btn bg-card text-foreground border-border hover:bg-muted transition-colors flex items-center gap-2">
-                                    <Sliders className="h-3.5 w-3.5" />
-                                    <span>Rate Options</span>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-52 bg-card border-border rounded-sm shadow-md z-50">
-                                <DropdownMenuItem onClick={() => setIsRateSettingsOpen(true)} className="cursor-pointer text-foreground hover:bg-muted text-[12px]">
-                                    Configure Local Premiums
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => setMarketRateDialogState({ isOpen: true, metalType: 'GOLD' })} className="cursor-pointer text-foreground hover:bg-muted text-[12px]">
-                                    Manual Rate: GOLD
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setMarketRateDialogState({ isOpen: true, metalType: 'SILVER' })} className="cursor-pointer text-foreground hover:bg-muted text-[12px]">
-                                    Manual Rate: SILVER
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        <button
-                            disabled={isExporting}
-                            onClick={async () => {
-                                setIsExporting(true);
-                                try {
-                                    const params = { sortBy: 'purchaseDate', sortDir: 'asc' };
-                                    if (statusFilter) params.status = statusFilter;
-                                    if (metalFilter) params.metalType = metalFilter;
-
-                                    const blobData = await goldSilverAPI.exportCSV(params);
-                                    const url = window.URL.createObjectURL(new Blob([blobData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-                                    const link = document.createElement('a');
-                                    link.href = url;
-                                    link.setAttribute('download', 'gold_silver_export.xlsx');
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    link.parentNode.removeChild(link);
-                                    window.URL.revokeObjectURL(url);
-                                    toast({ title: 'Export Successful', description: 'Records downloaded as Excel (.xlsx).' });
-                                } catch (err) {
-                                    console.error('[Export Error]', err);
-                                    toast({ title: 'Export Failed', description: 'Could not export Excel file.', variant: 'destructive' });
-                                } finally {
-                                    setIsExporting(false);
-                                }
-                            }}
-                            className="ed-btn bg-card text-foreground border-border hover:bg-muted disabled:opacity-50 flex items-center gap-2 justify-center"
-                        >
-                            {isExporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <span>Export Excel</span>}
-                        </button>
-
-                        <button onClick={openCreate} className="ed-btn ed-btn-accent">
-                            <Plus className="h-3 w-3" strokeWidth={2.5} /> New Item
-                        </button>
-                    </div>
-
-                    {summaryData && (
-                        <div className="flex justify-end gap-3 text-[11px] font-mono text-muted-foreground mt-1">
-                            <span>Holdings: <span className="text-amber-500 font-semibold">{formatWeight(summaryData.totalGoldWeight)} Au</span></span>
-                            <span>•</span>
-                            <span><span className="text-slate-400 font-semibold">{formatWeight(summaryData.totalSilverWeight)} Ag</span></span>
-                        </div>
-                    )}
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Gold & Silver</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Manage your precious metal investments (SGBs, physical, ETFs).</p>
                 </div>
             </header>
 
@@ -535,7 +427,7 @@ export default function GoldSilverPage() {
             />
 
             {/* Live Metal Rates Banner */}
-            <div className="ed-card p-4 bg-muted/20 border border-border flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div className="bg-card border shadow-sm rounded-lg overflow-hidden p-4 bg-muted/20 border border-border flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                 <div className="flex items-center gap-6 flex-wrap">
                     {/* GOLD Rates */}
                     <div className="space-y-1">
@@ -701,7 +593,7 @@ export default function GoldSilverPage() {
             {isLoadingData ? (
                 <div className={gridClass}>
                     {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="ed-card h-48 p-5 space-y-4">
+                        <div key={i} className="bg-card border shadow-sm rounded-lg overflow-hidden h-48 p-5 space-y-4">
                             <Skeleton className="h-5 w-1/2" />
                             <Skeleton className="h-4 w-1/3" />
                             <Skeleton className="h-12 w-full mt-4" />
@@ -709,11 +601,11 @@ export default function GoldSilverPage() {
                     ))}
                 </div>
             ) : items.length === 0 ? (
-                <section className="ed-card relative px-8 py-16 text-center max-w-md mx-auto mt-12">
-                    <span className="corner-mark corner-tl" />
-                    <span className="corner-mark corner-tr" />
-                    <span className="corner-mark corner-bl" />
-                    <span className="corner-mark corner-br" />
+                <section className="bg-card border shadow-sm rounded-lg overflow-hidden px-8 py-16 text-center max-w-md mx-auto mt-12">
+                    
+                    
+                    
+                    
                     <Coins className="h-7 w-7 text-muted-foreground mx-auto mb-4" strokeWidth={1.5} />
                     <p className="font-serif italic text-[24px] text-foreground mb-1">No holdings found.</p>
                     <p className="text-[12px] text-muted-foreground mb-5">

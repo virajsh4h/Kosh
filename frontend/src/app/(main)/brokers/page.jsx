@@ -6,37 +6,30 @@ import { BrokerCard } from './_shared/BrokerCard';
 
 export default function BrokersPage() {
     return (
-        <div className="space-y-10">
-            <header className="pb-6 border-b border-hairline">
-                <div className="flex items-center gap-3 mb-5">
-                    <span className="index-num">FOLIO·§03</span>
-                    <span className="h-px w-8 bg-hairline" />
-                    <span className="eyebrow">Vendor Directory</span>
+        <div className="space-y-6">
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Broker Integrations</h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        Connect and manage your brokerage accounts for automatic sync.
+                    </p>
                 </div>
-                <h1 className="display-serif text-[40px] md:text-[56px] text-foreground mb-3">
-                    Broker <span className="italic text-[hsl(var(--accent))]">Integrations</span>
-                </h1>
-                <p className="font-serif italic text-[15px] text-muted-foreground max-w-2xl leading-relaxed">
-                    Authorise your brokerage accounts to syndicate holdings, positions, and funds. CoinTrack reads only — it cannot trade on your behalf.
-                </p>
             </header>
 
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 stagger-fade">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {BROKER_LIST.map((broker, i) => (
                     <BrokerCard key={broker.id} broker={broker} index={i} />
                 ))}
             </div>
 
-            <div className="ed-card relative px-6 py-5 flex items-start gap-4 mt-2">
-                <span className="corner-mark corner-tl" />
-                <span className="corner-mark corner-br" />
-                <div className="h-10 w-10 flex items-center justify-center rounded-sm bg-[hsl(var(--accent))]/10 border border-[hsl(var(--accent))]/30 flex-shrink-0">
-                    <ShieldCheck className="h-4 w-4 text-[hsl(var(--accent))]" strokeWidth={2} />
+            <div className="mt-8 bg-blue-50/50 border border-blue-100 rounded-lg p-5 flex gap-4 items-start">
+                <div className="p-2 bg-blue-100 text-blue-700 rounded-md shrink-0">
+                    <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                    <p className="eyebrow-strong mb-1.5">Notice on Security</p>
-                    <p className="text-[12px] text-muted-foreground font-serif italic leading-relaxed">
-                        Credentials are encrypted with AES-256-GCM before storage. CoinTrack reads portfolio data only — placement, modification, or cancellation of orders is impossible by design.
+                    <h3 className="font-semibold text-blue-900 text-sm">Security & Privacy</h3>
+                    <p className="text-sm text-blue-800/80 mt-1">
+                        Your credentials are encrypted using industry-standard AES-256. Kosh only requests read-only access to synchronize your portfolio data. We cannot execute trades or withdraw funds on your behalf.
                     </p>
                 </div>
             </div>
