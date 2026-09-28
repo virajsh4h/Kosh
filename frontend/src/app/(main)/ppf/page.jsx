@@ -2,7 +2,7 @@
 
 import PpfDialog from '@/components/ppf/PpfDialog';
 import PpfSettingsDialog from '@/components/ppf/PpfSettingsDialog';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import FilterDropdown from '@/components/ui/FilterDropdown';
 import { ppfAPI } from '@/lib/api';

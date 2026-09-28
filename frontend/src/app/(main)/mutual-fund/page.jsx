@@ -1,7 +1,7 @@
 'use client';
 
 import { useToast } from "@/components/ui/use-toast";
-import { mutualFundAPI } from "@/lib/api/mutualFundAPI";
+import { mutualFundAPI } from "@/lib/api";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useIsFetching, useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { toast as sonnerToast } from "sonner";
 import DashboardTab from "./components/DashboardTab";
 import LumpsumTab from "./components/LumpsumTab";
-import NewSchemeModal from "./components/NewSchemeModal";
+import NewSchemeModal from "./NewSchemeModal";
 import RedemptionTab from "./components/RedemptionTab";
 import SchemeSummaryTab from "./components/SchemeSummaryTab";
 import SipTab from "./components/SipTab";

@@ -1,6 +1,6 @@
 'use client';
 
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { usePortfolioHoldings } from '@/hooks/usePortfolioHoldings';
 import { formatCurrency, formatPercent } from '@/lib/format';
 import { getShortCompanyName } from '@/lib/stockNameMapping';

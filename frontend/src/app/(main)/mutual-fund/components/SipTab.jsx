@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutualFundAPI } from "@/lib/api";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Repeat, Plus, Play, Pause } from "lucide-react";
 import SipContributionModal from "../SipContributionModal";
 import SipMandateModal from "../SipMandateModal";

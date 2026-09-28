@@ -1,7 +1,7 @@
 'use client';
 
 import FdDialog from '@/components/fixeddeposit/FdDialog';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import {
     DropdownMenu,

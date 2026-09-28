@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { mutualFundAPI } from "@/lib/api";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { List, Plus } from "lucide-react";
 import LumpsumTransactionModal from "../LumpsumTransactionModal";
 import FilterDropdown from "@/components/ui/FilterDropdown";

@@ -3,7 +3,7 @@
 import EpfInterestRateDialog from '@/components/epf/EpfInterestRateDialog';
 import EpfSettingsDialog from '@/components/epf/EpfSettingsDialog';
 import EpfTransactionDialog from '@/components/epf/EpfTransactionDialog';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import FilterDropdown from '@/components/ui/FilterDropdown';
 import { epfAPI, userAPI } from '@/lib/api';

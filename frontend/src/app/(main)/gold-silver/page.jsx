@@ -4,7 +4,7 @@ import GoldSilverDialog from '@/components/goldsilver/GoldSilverDialog';
 import MarketRateDialog from '@/components/goldsilver/MarketRateDialog';
 import RateSettingsDialog from '@/components/goldsilver/RateSettingsDialog';
 import RateDisclosureBanner from '@/components/goldsilver/RateDisclosureBanner';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import {
     DropdownMenu,

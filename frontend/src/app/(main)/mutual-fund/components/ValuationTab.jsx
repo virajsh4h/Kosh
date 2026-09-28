@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { mutualFundAPI } from "@/lib/api";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { LineChart, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { mutualFundAPI } from "@/lib/api";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PieChart, Plus, RefreshCw } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import OverrideUnitsModal from "./OverrideUnitsModal";

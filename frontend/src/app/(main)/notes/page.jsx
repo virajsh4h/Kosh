@@ -1,7 +1,7 @@
 'use client';
 
 import NoteDialog from '@/components/notes/NoteDialog';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { notesAPI } from '@/lib/api';
 import { cn } from '@/lib/utils';
